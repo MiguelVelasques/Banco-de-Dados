@@ -1,0 +1,148 @@
+1)
+
+CREATE DATABASE trabalho1;
+
+2)
+
+CREATE TABLE aluno (
+matric_aluno INTEGER PRIMARY KEY,
+nome_alu VARCHAR(80),
+telefone_alu VARCHAR(80),
+endereco_alu VARCHAR(80),
+pai_alu VARCHAR(80),
+mae_alu VARCHAR(80)	
+);
+
+CREATE TABLE disciplina (
+cod_dis INTEGER PRIMARY KEY,
+nome_dis VARCHAR(80)
+);
+
+CREATE TABLE notas (
+matric_not INTEGER PRIMARY KEY,
+dis_not INTEGER,
+nota1_not DOUBLE PRECISION,
+nota2_not DOUBLE PRECISION,
+media_not DOUBLE PRECISION
+);
+
+3)
+
+CREATE ROLE professor;
+CREATE ROLE aluno;
+CREATE ROLE secretaria;	
+
+4)
+
+REVOKE ALL ON FUNCTION inclusaoaluno(integer,varchar,varchar,varchar,varchar,varchar) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION inclusaodisciplina(integer,varchar) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION atualizaaluno(integer,varchar,varchar,varchar,varchar,varchar) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION atualizadisciplina(integer,varchar) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION consultaboletim(integer, integer, double precision, double precision, double precision) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION consultadadosaluno(integer,varchar,varchar,varchar,varchar,varchar) FROM PUBLIC;
+
+REVOKE ALL ON FUNCTION digitanota(integer, integer, double precision, double precision, double precision) FROM PUBLIC;
+
+5)
+
+CREATE USER joao   WITH PASSWORD 'joao' IN ROLE professor;
+CREATE USER pedro WITH PASSWORD 'pedro' IN ROLE aluno;
+CREATE USER paulo WITH PASSWORD 'paulo' IN ROLE secretaria;
+
+6)
+
+CREATE OR REPLACE FUNCTION inclusaoaluno(matric_alu integer, nome_alu varchar, telefone_alu varchar, endereco_alu varchar, pai_alu varchar, mae_alu varchar)RETURNS void AS
+  $$
+    BEGIN
+	INSERT INTO aluno VALUES (matric_alu, nome_alu, telefone_alu , endereco_alu, pai_alu, mae_alu);
+	RETURN TRUE;
+          
+    END;
+  $$
+  LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION inclusaodisciplina(cod_dis integer, nome_dis varchar)RETURNS void AS
+  $$
+    BEGIN
+	INSERT INTO disciplina VALUES (cod_dis, nome_dis);
+          
+    END;
+  $$
+  LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION atualizaaluno(matric_alu integer, nome_alu varchar, telefone_alu varchar, endereco_alu varchar, pai_alu varchar, mae_alu varchar)RETURNS void AS
+  $$
+    BEGIN
+	UPDATE aluno SET matric_alu =  , nome_alu = ‘’, telefone_alu = ‘’, 	endereco_alu = ‘’, pai_alu = , mae_alu = ‘’ ;	
+	
+          
+    END;
+  $$
+  LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION atualizadisciplina(cod_dis integer, nome_dis varchar )RETURNS void AS
+  $$
+    BEGIN
+	UPDATE disciplina SET cod_dis=  , nome_dis = ‘’;	
+	
+          
+    END;
+  $$
+  LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION consultaboletim(matric_not integer, dis_not integer, nota1_not double precision, nota2_not double precision, media_not double precision)RETURNS void AS
+  $$
+    BEGIN
+	SELECT * FROM notas;	
+	
+          
+    END;
+  $$
+  LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION consultadadosaluno(matric_alu integer, nome_alu varchar, telefone_alu varchar, endereco_alu varchar, pai_alu varchar, mae_alu varchar)RETURNS void AS
+  $$
+    BEGIN
+	SELECT * FROM aluno;	
+	
+          
+    END;
+  $$
+  LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION digitanota (matric_not integer, dis_not integer, nota1_not double precision, nota2_not double precision, media_not double precision)RETURNS void AS
+  $$
+    BEGIN
+	INSERT INTO notas VALUES (matric_not, dis_not, nota1_not, nota2_not, media_not);
+      RETURN TRUE;    
+    END;
+  $$
+  LANGUAGE plpgsql SECURITY DEFINER;
+
+
+
+
+
+GRANT EXECUTE ON FUNCTION inclusaoaluno(integer,varchar,varchar,varchar,varchar,varchar) TO secretaria;
+
+GRANT EXECUTE ON FUNCTION inclusaodisciplina(integer,varchar) TO secretaria;
+
+GRANT EXECUTE ON FUNCTION atualizaaluno(integer,varchar,varchar,varchar,varchar,varchar) TO secretaria;
+
+GRANT EXECUTE ON FUNCTION atualizadisciplina(integer,varchar) TO secretaria;
+
+GRANT EXECUTE ON FUNCTION consultaboletim(integer, integer, double precision, double precision, double precision) TO secretaria;
+
+GRANT EXECUTE ON FUNCTION  consultadadosaluno(integer,varchar,varchar,varchar,varchar,varchar) TO secretaria;
+
+GRANT EXECUTE ON FUNCTION digitanota(integer, integer, double precision, double precision, double precision) TO professor;
+
+
+
+
+

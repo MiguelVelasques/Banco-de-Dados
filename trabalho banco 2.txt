@@ -1,0 +1,43 @@
+CREATE TABLE epi(
+id_epi INTEGER PRIMARY KEY,
+data_entrega DATE,
+validade_ca DATE,
+descricao_epi VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE historico_epi(
+id SERIAL PRIMARY KEY,
+id_epi INTEGER,
+ultima_entrega DATE,
+entrega_nova DATE,
+validade_nova_ca DATE,
+FOREIGN KEY(id_epi) REFERENCES epi
+);
+
+
+CREATE OR REPLACE FUNCTION epi_mod() RETURNS trigger AS 
+$BODY$
+BEGIN
+ IF NEW.validade_ca <> OLD.validade_ca AND NEW.data_entrega <> OLD.data_entrega THEN
+
+INSERT INTO historico_epi (id_epi,ultima_entrega,entrega_nova,validade_nova_ca) VALUES (NEW.id_epi,OLD.data_entrega,NEW.data_entrega,NEW.validade_ca);  
+ END IF;    
+ RETURN NEW;
+END;
+$BODY$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER tr_epi
+ AFTER UPDATE ON epi
+ FOR EACH ROW EXECUTE PROCEDURE epi_mod();
+
+INSERT INTO epi (id_epi,data_entrega,validade_ca, descricao_epi ) VALUES (1,'2003-09-12','2008-09-12','botina');
+INSERT INTO epi (id_epi,data_entrega,validade_ca, descricao_epi ) VALUES (2,'2005-09-12','2010-09-12','protetor auricular');
+
+SELECT * FROM historico_epi;
+SELECT * FROM epi;
+
+UPDATE epi SET data_entrega = '2008-09-12', validade_ca = '2013-09-12' WHERE id_epi = 1;
+UPDATE epi SET data_entrega = '2013-09-12', validade_ca = '2018-09-12' WHERE id_epi = 1;
+UPDATE epi SET data_entrega = '2010-09-12', validade_ca = '2015-09-12' WHERE id_epi = 2;
+UPDATE epi SET data_entrega = '2015-09-12', validade_ca = '2020-09-12' WHERE id_epi = 2;
